@@ -1,0 +1,25 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+plugins {
+    id 'java'
+}
+
+compileJava {
+    options.compilerArgs << "-h" << "${project.buildDir}/generated/sources/native/headers/main"
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testImplementation("junit:junit:4.12")
+}
+
+test {
+    testLogging.showStandardStreams(true)
+    testLogging.events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+
+    outputs.upToDateWhen { false }
+    jvmArgs "-agentpath:${project.buildDir}/libs/libtest-toolkit-native-agent.dylib"
+}
