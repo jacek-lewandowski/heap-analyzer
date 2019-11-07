@@ -1,6 +1,6 @@
 package net.enigma.test.toolkit;
 
-public class TestToolkitAgent
+class TestToolkitAgent
 {
     /**
      * Counts the number of all instances on heap (including those which are not referenced any more)
@@ -22,13 +22,22 @@ public class TestToolkitAgent
     public static native int countLiveReferences(Object object);
 
     /**
+     * Counts the total number of live instances with a given tag
+     *
+     * @param tag tag
+     *
+     * @return the number of live instances
+     */
+    public static native long countLiveTaggedObjects(long tag, boolean debugReferences);
+
+    /**
      * Counts the total size of live instances with a given tag
      *
      * @param tag tag
      *
      * @return the size in bytes
      */
-    public static native long countSizeOfLiveTaggedObjects(long tag);
+    public static native long countSizeOfLiveTaggedObjects(long tag, boolean debugReferences);
 
     /**
      * Force full garbage collection
@@ -51,4 +60,13 @@ public class TestToolkitAgent
      * @return tag, where 0 is considered as no-tag
      */
     public static native long getTag(Object object);
+
+    /**
+     * Sets the tag {@code newTag} on all objects tagged with {@code curTag}
+     * given {@code curTag} is != 0; or on all objects on heap otherwise.
+     *
+     * @param curTag tag of the objects to be selected or 0 if all objects are to be selected
+     * @param newTag new tag to be set
+     */
+    public static native void setTag(long curTag, long newTag);
 }

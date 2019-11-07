@@ -19,16 +19,16 @@ const char *NATIVE_METHOD_EXCEPTION = "com/sun/jdi/NativeMethodException";
 
 jint throw_native_method_exception(JNIEnv *env, const char *message)
 {
-    jclass exClass;
+    jclass exception_class;
 
-    exClass = env->FindClass(NATIVE_METHOD_EXCEPTION);
-    if (exClass == NULL)
+    exception_class = env->FindClass(NATIVE_METHOD_EXCEPTION);
+    if (exception_class == NULL)
     {
         cerr << "ERROR: Could not throw NativeMethodException because such class could not be found" << endl;
         return JNI_ERR;
     }
 
-    return env->ThrowNew(exClass, message);
+    return env->ThrowNew(exception_class, message);
 }
 
 void check_jvmti_error(JNIEnv *env, jvmtiError error)
