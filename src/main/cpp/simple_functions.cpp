@@ -22,7 +22,7 @@ typedef struct
 
 jint _reset_tags_callback(jlong class_tag, jlong size, jlong *tag_ptr, jint length, void *user_data)
 {
-    *tag_ptr &= MARKER_BIT | CLASS_BIT;
+    *tag_ptr &= MARKER_BIT | CLASS_BIT | SKIP_REFS_FROM_BIT;
     return JVMTI_VISIT_OBJECTS;
 }
 
@@ -56,12 +56,14 @@ jint _follow_refs_callback(
 {
     FollowRefsData *data = (FollowRefsData *) user_data;
 
-    // this object is referred from the object of class which is flagged
-    if (referrer_class_tag & SKIP_REFS_FROM_BIT)
-        return JVMTI_VISIT_ABORT;
+    // this object is referred from the object of class which is flagged -> prune this branch
+    if (referrer_class_tag & SKIP_REFS_FROM_BIT) return 0;
 
-    // this object was already visited or it is a class which do not care much about here
-    if ((*tag_ptr) & VISIT_BIT || (*tag_ptr) & CLASS_BIT) return JVMTI_VISIT_OBJECTS;
+    // this object is a class, we are not interested in references from it -> prune this branch
+    if ((*tag_ptr) & CLASS_BIT) return 0;
+
+    // this object was already visited, continue
+    if ((*tag_ptr) & VISIT_BIT) return JVMTI_VISIT_OBJECTS;
 
     data->size += size;
     data->count += 1;
@@ -174,12 +176,13 @@ void Java_net_enigma_test_toolkit_TestToolkitAgent_skipRefsFromClassesBySubstrin
         char *signature = NULL;
         for (jint i = 0; i < cnt; i++)
         {
+            long tag = 0;
+            jvmti_env->GetTag(classes[i], &tag);
+            jvmti_env->SetTag(classes[i], tag | CLASS_BIT);
             jvmti_env->GetClassSignature(classes[i], &signature, NULL);
             if (signature != NULL && strstr(signature, pattern))
             {
-                long tag = 0;
-                jvmti_env->GetTag(classes[i], &tag);
-                jvmti_env->SetTag(classes[i], tag | SKIP_REFS_FROM_BIT);
+                jvmti_env->SetTag(classes[i], tag | SKIP_REFS_FROM_BIT | CLASS_BIT);
                 tagged++;
             }
             jvmti_env->Deallocate((unsigned char *) signature);

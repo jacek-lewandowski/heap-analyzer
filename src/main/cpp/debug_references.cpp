@@ -110,7 +110,7 @@ jint _debug_refs_callback(
     DebugRefsData *data = (DebugRefsData *) user_data;
 
     if (referrer_class_tag & SKIP_REFS_FROM_BIT)
-        return JVMTI_VISIT_ABORT;
+        return 0; // prune this branch
 
     jlong tag_ptr_lb;
     if (*tag_ptr & OBJECT_BIT)
@@ -153,7 +153,7 @@ jint tag_all_objects_callback(jlong class_tag, jlong size, jlong *tag_ptr, jint 
         *objects_cnt += 1;
     }
 
-    return JVMTI_ITERATION_CONTINUE;
+    return JVMTI_VISIT_OBJECTS;
 }
 
 jint _get_fields_count(jclass cls)
@@ -268,7 +268,7 @@ void _print_field_details(JNIEnv *env, jvmtiHeapReferenceInfoField *field, jclas
     }
     else
     {
-        cerr << "index: " << field->index;
+        cerr << "[" << field->index << "]";
     }
 
     _release_jvmti_objects(1, &fields);
@@ -276,12 +276,12 @@ void _print_field_details(JNIEnv *env, jvmtiHeapReferenceInfoField *field, jclas
 
 void _print_array_element_detail(jvmtiHeapReferenceInfoArray *array)
 {
-    cerr << "index: " << array->index;
+    cerr << "[" << array->index << "]";
 }
 
 void _print_constant_pool_details(jvmtiHeapReferenceInfoConstantPool *pool)
 {
-    cerr << "index: " << pool->index;
+    cerr << "[" << pool->index << "]";
 }
 
 void _print_frame_details(jmethodID method, jint thread_id, jint depth, jlocation location)
@@ -330,27 +330,27 @@ _print_references(JNIEnv *env, jint max_depth, jint level, jlong tag, vector<Ref
         switch ((*referrer)->kind)
         {
             case JVMTI_HEAP_REFERENCE_FIELD:
-                cerr << "field, ";
+                cerr << "field: ";
                 _print_field_details(env, &(*referrer)->info->field, classes[(*referrer)->referrer_class], is_inner);
                 break;
             case JVMTI_HEAP_REFERENCE_STATIC_FIELD:
-                cerr << "static field, ";
+                cerr << "static field: ";
                 _print_field_details(env, &(*referrer)->info->field, classes[(*referrer)->referrer_class], is_inner);
                 break;
             case JVMTI_HEAP_REFERENCE_ARRAY_ELEMENT:
-                cerr << "array element, ";
+                cerr << "array element: ";
                 _print_array_element_detail(&(*referrer)->info->array);
                 break;
             case JVMTI_HEAP_REFERENCE_CONSTANT_POOL:
-                cerr << "constant pool, ";
+                cerr << "constant pool: ";
                 _print_constant_pool_details(&(*referrer)->info->constant_pool);
                 break;
             case JVMTI_HEAP_REFERENCE_JNI_LOCAL:
-                cerr << "jni local, ";
+                cerr << "jni local: ";
                 _print_jni_local_details(&(*referrer)->info->jni_local);
                 break;
             case JVMTI_HEAP_REFERENCE_STACK_LOCAL:
-                cerr << "stack local, ";
+                cerr << "stack local: ";
                 _print_stack_local_details(&(*referrer)->info->stack_local);
                 break;
             case JVMTI_HEAP_REFERENCE_CLASS:
