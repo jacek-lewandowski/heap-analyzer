@@ -2,6 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id 'java'
+    id 'application'
 }
 
 compileJava {
@@ -22,4 +23,9 @@ test {
 
     outputs.upToDateWhen { false }
     jvmArgs "-agentpath:${project.buildDir}/libs/libtest-toolkit-native-agent.dylib"
+}
+
+application {
+    mainClassName = 'net.enigma.test.toolkit.TestToolkitExamples'
+    applicationDefaultJvmArgs = ["-agentpath:${project.buildDir}/libs/libtest-toolkit-native-agent.dylib"]
 }
