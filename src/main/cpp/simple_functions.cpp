@@ -176,13 +176,12 @@ void Java_net_enigma_test_toolkit_TestToolkitAgent_skipRefsFromClassesBySubstrin
         char *signature = NULL;
         for (jint i = 0; i < cnt; i++)
         {
-            long tag = 0;
-            jvmti_env->GetTag(classes[i], &tag);
-            jvmti_env->SetTag(classes[i], tag | CLASS_BIT);
             jvmti_env->GetClassSignature(classes[i], &signature, NULL);
             if (signature != NULL && strstr(signature, pattern))
             {
-                jvmti_env->SetTag(classes[i], tag | SKIP_REFS_FROM_BIT | CLASS_BIT);
+                long tag = 0;
+                jvmti_env->GetTag(classes[i], &tag);
+                jvmti_env->SetTag(classes[i], tag | SKIP_REFS_FROM_BIT);
                 tagged++;
             }
             jvmti_env->Deallocate((unsigned char *) signature);

@@ -44,11 +44,15 @@ public abstract class TestToolkit {
 
         @Override
         public void setTag(Object object, long tag) {
+            if (object == null)
+                throw new IllegalArgumentException("object cannot be null");
             TestToolkitAgent.setTag(object, tag);
         }
 
         @Override
         public long getTag(Object object) {
+            if (object == null)
+                throw new IllegalArgumentException("object cannot be null");
             return TestToolkitAgent.getTag(object);
         }
 
