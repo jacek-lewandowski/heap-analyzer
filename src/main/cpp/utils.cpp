@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdarg.h>
 #include <stdio.h>
+#include <cstring>
 
 #include "jni.h"
 #include "jvmti.h"

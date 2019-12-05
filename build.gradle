@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.internal.os.OperatingSystem
 
 plugins {
     id 'java'
@@ -17,6 +18,14 @@ dependencies {
     testImplementation("junit:junit:4.12")
 }
 
+if (OperatingSystem.current().isMacOsX()) {
+    gradle.ext.agentPath = "libs/libtest-toolkit-native-agent.dylib"
+} else if (OperatingSystem.current().isLinux()) {
+    gradle.ext.agentPath = "libs/libtest-toolkit-native-agent.so"
+} else {
+    throw new StopActionException("Unsupported operating system: ${OperatingSystem.getDisplayName()}");
+}
+
 test {
     testLogging.showStandardStreams(true)
     testLogging.showExceptions(true)
@@ -25,10 +34,11 @@ test {
     testLogging.events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
 
     outputs.upToDateWhen { false }
-    jvmArgs "-agentpath:${project.buildDir}/libs/libtest-toolkit-native-agent.dylib"
+    jvmArgs "-agentpath:${project.buildDir}/${gradle.ext.agentPath}"
 }
 
 application {
     mainClassName = 'net.enigma.test.toolkit.TestToolkitExamples'
-    applicationDefaultJvmArgs = ["-agentpath:${project.buildDir}/libs/libtest-toolkit-native-agent.dylib"]
+    applicationDefaultJvmArgs = ["-agentpath:${project.buildDir}/${gradle.ext.agentPath}"]
 }
+

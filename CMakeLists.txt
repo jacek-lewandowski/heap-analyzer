@@ -50,6 +50,6 @@ set(SOURCE_FILES
         src/main/cpp/simple_functions.cpp
         src/main/cpp/utils.cpp)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ../build/libs)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY build/libs)
 
 add_library(test-toolkit-native-agent SHARED ${SOURCE_FILES})

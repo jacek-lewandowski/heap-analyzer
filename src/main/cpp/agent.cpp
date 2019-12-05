@@ -2,6 +2,7 @@
 #include "jvmti.h"
 #include "net_enigma_test_toolkit_TestToolkitAgent.h"
 #include <unordered_map>
+#include <cstring>
 
 using namespace std;
 
