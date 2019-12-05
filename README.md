@@ -3,6 +3,19 @@
 This agent and its accompanying Java library provides functionality which may be helpful to track heap memory usage
 of Java programs.
 
+## Installation
+
+In order to install you need MacOS or Linux operation system. Windows and other OSes are currently not supported.
+
+You will also need CMake 3.15+ and Gradle 6.
+
+```
+gradle jar --rerun-tasks
+cmake CMakeLists.txt
+make
+gradle test
+```
+
 All examples can be run by executing `gradle run`
 
 ## Tagging objects
