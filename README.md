@@ -7,7 +7,8 @@ of Java programs.
 
 In order to install you need MacOS or Linux operation system. Windows and other OSes are currently not supported.
 
-You will also need CMake 3.15+ and Gradle 6.
+You will also need CMake 3.13+ and Gradle 6.
+Make sure JAVA_HOME environment variable points to the JDK properly.
 
 ```
 gradle jar --rerun-tasks
