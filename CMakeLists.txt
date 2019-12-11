@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(test-toolkit-native-agent)
+project(heap-analyzer-native-agent)
 
 set(LIB_MAJOR_VERSION "0")
 set(LIB_MINOR_VERSION "1")
@@ -52,4 +52,4 @@ set(SOURCE_FILES
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY build/libs)
 
-add_library(test-toolkit-native-agent SHARED ${SOURCE_FILES})
+add_library(heap-analyzer-native-agent SHARED ${SOURCE_FILES})

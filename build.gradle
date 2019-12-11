@@ -19,9 +19,9 @@ dependencies {
 }
 
 if (OperatingSystem.current().isMacOsX()) {
-    gradle.ext.agentPath = "libs/libtest-toolkit-native-agent.dylib"
+    gradle.ext.agentPath = "libs/libheap-analyzer-native-agent.dylib"
 } else if (OperatingSystem.current().isLinux()) {
-    gradle.ext.agentPath = "libs/libtest-toolkit-native-agent.so"
+    gradle.ext.agentPath = "libs/libheap-analyzer-native-agent.so"
 } else {
     throw new StopActionException("Unsupported operating system: ${OperatingSystem.getDisplayName()}");
 }
