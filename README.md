@@ -158,13 +158,13 @@ after creating AtomicReference which indirectly references array of 10000 bytes 
 after marking skipping all references from all AtomicReference instances HeapTraversalSummary[totalSize=444256, totalCount=8628, markedSize=0, markedCount=0]
 ```
 
-## Debugging references
+## Dumping references
 
-Another method is designed to debug references leading to the marked objects (referents of marked object). It also 
+Another method is designed to dump references leading to the marked objects (referents of marked object). It also 
 applies only to the live objects, reachable from heap roots. The references are printed in a tree-like structure to 
 standard error stream. 
 
-#### Example - debug references
+#### Example - dump references
 
 ```java
 byte[] array = new byte[10000];
@@ -183,23 +183,23 @@ t.setDaemon(true);
 t.start();
 
 HeapAnalyzer.instance.markObject(array);
-HeapAnalyzer.instance.debugReferences(0, 3);
+HeapAnalyzer.instance.dumpReferencess(0, 3);
 ```
 
 produces output similar to:
 
 ```
 Object (10016 bytes) of [B, referenced from:
- ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, stack local: thread: 1/2, Lnet/enigma/test/toolkit/HeapAnalyzerExamples;.debugReferencesExample(HeapAnalyzerExamples.java:109)
+ ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, stack local: thread: 1/2, Lnet/enigma/test/toolkit/HeapAnalyzerExamples;.dumpReferencessExample(HeapAnalyzerExamples.java:109)
  ├── Lnet/enigma/test/toolkit/HeapAnalyzerExamples$1;, field: val$array  (HeapAnalyzerExamples.java:95)
  │   ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, thread
  │   ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, stack local: thread: 10/1, Lnet/enigma/test/toolkit/HeapAnalyzerExamples$1;.run(HeapAnalyzerExamples.java:101)
- │   ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, stack local: thread: 1/2, Lnet/enigma/test/toolkit/HeapAnalyzerExamples;.debugReferencesExample(HeapAnalyzerExamples.java:109)
+ │   ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, stack local: thread: 1/2, Lnet/enigma/test/toolkit/HeapAnalyzerExamples;.dumpReferencessExample(HeapAnalyzerExamples.java:109)
  │   ├── [Ljava/lang/Thread;, array element: [1]
  │   │   ├── Ljava/lang/ThreadGroup;, field: threads 
  ├── Ljava/util/Collections$SingletonList;, field: element  (Collections.java:4803)
  │   ├── Ljava/util/concurrent/atomic/AtomicReference;, field: value 
- │   │   ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, stack local: thread: 1/2, Lnet/enigma/test/toolkit/HeapAnalyzerExamples;.debugReferencesExample(HeapAnalyzerExamples.java:109)
+ │   │   ├── Lnet/enigma/test/toolkit/HeapTraversalSummary;, stack local: thread: 1/2, Lnet/enigma/test/toolkit/HeapAnalyzerExamples;.dumpReferencessExample(HeapAnalyzerExamples.java:109)
 ```
 
 The two parameters of this method can be used to limit the amount of data which is printed. If there are many marked

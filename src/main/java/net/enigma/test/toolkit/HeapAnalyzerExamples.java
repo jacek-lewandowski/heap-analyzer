@@ -86,8 +86,8 @@ public class HeapAnalyzerExamples {
         System.out.println("after marking skipping all references from all AtomicReference instances " + hs3);
     }
 
-    public static void debugReferencesExample() {
-        System.out.println("\nDebug references example\n================================");
+    public static void dumpReferencesExample() {
+        System.out.println("\nDump references example\n================================");
         HeapAnalyzer.instance.setTag(0); // reset tags for all objects to 0
 
         byte[] array = new byte[10000];
@@ -106,14 +106,14 @@ public class HeapAnalyzerExamples {
         t.start();
 
         HeapAnalyzer.instance.markObject(array);
-        HeapAnalyzer.instance.debugReferences(0, 3);
+        HeapAnalyzer.instance.dumpReferences(0, 3);
     }
 
     public static void main(String[] args) {
         taggingExample();
         heapTraversalExample1();
         heapTraversalExample2();
-        debugReferencesExample();
+        dumpReferencesExample();
     }
 
 }
