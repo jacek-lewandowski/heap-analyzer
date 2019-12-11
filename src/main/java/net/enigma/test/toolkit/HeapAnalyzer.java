@@ -1,27 +1,27 @@
 package net.enigma.test.toolkit;
 
-public abstract class TestToolkit {
-    public static final TestToolkit instance;
+public abstract class HeapAnalyzer {
+    public static final HeapAnalyzer instance;
 
     static {
-        TestToolkit instanceLocal;
+        HeapAnalyzer instanceLocal;
         try {
 
-            TestToolkitAgent.init();
-            instanceLocal = new TestToolkitNativeDelegate();
+            HeapAnalyzerAgent.init();
+            instanceLocal = new HeapAnalyzerNativeDelegate();
         } catch (Error err) {
-            System.err.println("Looks like there is no TestToolkit agent present, using a dummy implementation");
-            instanceLocal = new TestToolkit() {
+            System.err.println("Looks like there is no HeapAnalyzer agent present, using a dummy implementation");
+            instanceLocal = new HeapAnalyzer() {
             };
         }
         instance = instanceLocal;
     }
 
-    private TestToolkit() {
+    private HeapAnalyzer() {
         // make it sealed
     }
 
-    private static class TestToolkitNativeDelegate extends TestToolkit {
+    private static class HeapAnalyzerNativeDelegate extends HeapAnalyzer {
         @Override
         public boolean isAgentAvailable() {
             return true;
@@ -29,31 +29,31 @@ public abstract class TestToolkit {
 
         @Override
         public synchronized HeapTraversalSummary traverseHeap() {
-            return TestToolkitAgent.traverseHeap();
+            return HeapAnalyzerAgent.traverseHeap();
         }
 
         @Override
         public synchronized void debugReferences(long sizeThreshold, int depth) {
-            TestToolkitAgent.debugReferences(sizeThreshold, depth);
+            HeapAnalyzerAgent.debugReferences(sizeThreshold, depth);
         }
 
         @Override
         public synchronized void forceGC() {
-            TestToolkitAgent.forceGC();
+            HeapAnalyzerAgent.forceGC();
         }
 
         @Override
         public void setTag(Object object, long tag) {
             if (object == null)
                 throw new IllegalArgumentException("object cannot be null");
-            TestToolkitAgent.setTag(object, tag);
+            HeapAnalyzerAgent.setTag(object, tag);
         }
 
         @Override
         public long getTag(Object object) {
             if (object == null)
                 throw new IllegalArgumentException("object cannot be null");
-            return TestToolkitAgent.getTag(object);
+            return HeapAnalyzerAgent.getTag(object);
         }
 
         @Override
@@ -61,22 +61,22 @@ public abstract class TestToolkit {
             if (curTag == 0)
                 throw new IllegalArgumentException("curTag cannot be 0");
 
-            TestToolkitAgent.setTag(curTag, newTag);
+            HeapAnalyzerAgent.setTag(curTag, newTag);
         }
 
         @Override
         public void setTag(long newTag) {
-            TestToolkitAgent.setTag(0, newTag);
+            HeapAnalyzerAgent.setTag(0, newTag);
         }
 
         @Override
         public void markObject(Object obj) {
-            TestToolkitAgent.markObject(obj);
+            HeapAnalyzerAgent.markObject(obj);
         }
 
         @Override
         public void skipRefsFromClassesBySubstring(String pattern) {
-            TestToolkitAgent.skipRefsFromClassesBySubstring(pattern);
+            HeapAnalyzerAgent.skipRefsFromClassesBySubstring(pattern);
         }
     }
 
@@ -93,21 +93,21 @@ public abstract class TestToolkit {
     }
 
     /**
-     * @see TestToolkitAgent#forceGC() 
+     * @see HeapAnalyzerAgent#forceGC()
      */
     public void forceGC() {
         // no-op
     }
 
     /**
-     * @see TestToolkitAgent#setTag(Object, long) 
+     * @see HeapAnalyzerAgent#setTag(Object, long)
      */
     public void setTag(Object object, long tag) {
         // no-op
     }
 
     /**
-     * @see TestToolkitAgent#getTag(Object) 
+     * @see HeapAnalyzerAgent#getTag(Object)
      */
     public long getTag(Object object) {
         // no-op
@@ -134,14 +134,14 @@ public abstract class TestToolkit {
     }
 
     /**
-     * @see TestToolkitAgent#markObject(Object) 
+     * @see HeapAnalyzerAgent#markObject(Object)
      */
     public void markObject(Object obj) {
         // no-op
     }
 
     /**
-     * @see TestToolkitAgent#skipRefsFromClassesBySubstring(String)
+     * @see HeapAnalyzerAgent#skipRefsFromClassesBySubstring(String)
      */
     public void skipRefsFromClassesBySubstring(String pattern) {
         // no-op

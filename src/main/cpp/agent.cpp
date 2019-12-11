@@ -1,6 +1,6 @@
 #include <iostream>
 #include "jvmti.h"
-#include "net_enigma_test_toolkit_TestToolkitAgent.h"
+#include "net_enigma_test_toolkit_HeapAnalyzerAgent.h"
 #include <unordered_map>
 #include <cstring>
 
@@ -61,7 +61,7 @@ jclass _find_class(JNIEnv *env, const char *name) {
     return NULL;
 }
 
-void Java_net_enigma_test_toolkit_TestToolkitAgent_init(JNIEnv *env, jclass interface_class)
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_init(JNIEnv *env, jclass interface_class)
 {
     if (!runtime_exception_class)
         runtime_exception_class = _find_class(env, "java/lang/RuntimeException");
