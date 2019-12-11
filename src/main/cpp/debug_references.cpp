@@ -1,7 +1,7 @@
 #include <iostream>
 #include "jvmti.h"
 #include "utils.h"
-#include "net_enigma_test_toolkit_TestToolkitAgent.h"
+#include "net_enigma_test_toolkit_HeapAnalyzerAgent.h"
 #include <unordered_map>
 #include <vector>
 #include "debug_references.h"
@@ -446,7 +446,7 @@ void debug_refs(JNIEnv *env, jlong size_threshold, jint depth)
 }
 
 void
-Java_net_enigma_test_toolkit_TestToolkitAgent_debugReferences(JNIEnv *env, jclass interface_class, jlong size_threshold,
+Java_net_enigma_test_toolkit_HeapAnalyzerAgent_debugReferences(JNIEnv *env, jclass interface_class, jlong size_threshold,
                                                               jint depth)
 {
     debug_refs(env, size_threshold, depth);

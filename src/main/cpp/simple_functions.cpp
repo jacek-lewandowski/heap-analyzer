@@ -1,7 +1,7 @@
 #include <iostream>
 #include "jvmti.h"
 #include "utils.h"
-#include "net_enigma_test_toolkit_TestToolkitAgent.h"
+#include "net_enigma_test_toolkit_HeapAnalyzerAgent.h"
 #include <unordered_map>
 #include <cstring>
 
@@ -37,7 +37,7 @@ void _reset_tags()
 
 // -------- forceGC --------
 
-void Java_net_enigma_test_toolkit_TestToolkitAgent_forceGC(JNIEnv *env, jclass thisClass)
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_forceGC(JNIEnv *env, jclass thisClass)
 {
     throw_exception_if_error(env, jvmti_env->ForceGarbageCollection());
 }
@@ -79,7 +79,7 @@ jint _follow_refs_callback(
     return JVMTI_VISIT_OBJECTS;
 }
 
-jobject Java_net_enigma_test_toolkit_TestToolkitAgent_traverseHeap(JNIEnv *env, jclass interface_class)
+jobject Java_net_enigma_test_toolkit_HeapAnalyzerAgent_traverseHeap(JNIEnv *env, jclass interface_class)
 {
     _reset_tags();
 
@@ -110,7 +110,7 @@ jobject Java_net_enigma_test_toolkit_TestToolkitAgent_traverseHeap(JNIEnv *env, 
 
 // -------- setTag(Object, long) --------
 
-void Java_net_enigma_test_toolkit_TestToolkitAgent_setTag__Ljava_lang_Object_2J(
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_setTag__Ljava_lang_Object_2J(
         JNIEnv *env,
         jclass interface_class,
         jobject object,
@@ -121,7 +121,7 @@ void Java_net_enigma_test_toolkit_TestToolkitAgent_setTag__Ljava_lang_Object_2J(
 
 // -------- getTag(Object) --------
 
-jlong Java_net_enigma_test_toolkit_TestToolkitAgent_getTag(JNIEnv *env, jclass interface_class, jobject object)
+jlong Java_net_enigma_test_toolkit_HeapAnalyzerAgent_getTag(JNIEnv *env, jclass interface_class, jobject object)
 {
     jlong tag = 0;
     throw_exception_if_error(env, jvmti_env->GetTag(object, &tag));
@@ -137,7 +137,7 @@ jint _tagging_callback(jlong class_tag, jlong size, jlong *tag_ptr, jint length,
     return JVMTI_VISIT_OBJECTS;
 }
 
-void Java_net_enigma_test_toolkit_TestToolkitAgent_setTag__JJ(
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_setTag__JJ(
         JNIEnv *env,
         jclass interface_class,
         jlong cur_tag,
@@ -154,7 +154,7 @@ void Java_net_enigma_test_toolkit_TestToolkitAgent_setTag__JJ(
 
 // -------- markObject(Object) --------
 
-void Java_net_enigma_test_toolkit_TestToolkitAgent_markObject(JNIEnv *env, jclass interface_class, jobject obj)
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_markObject(JNIEnv *env, jclass interface_class, jobject obj)
 {
     jlong tag = 0;
     throw_exception_if_error(env, jvmti_env->GetTag(obj, &tag));
@@ -163,7 +163,7 @@ void Java_net_enigma_test_toolkit_TestToolkitAgent_markObject(JNIEnv *env, jclas
 
 // -------- skipRefsFromClassesBySubstring(String) --------
 
-void Java_net_enigma_test_toolkit_TestToolkitAgent_skipRefsFromClassesBySubstring(JNIEnv *env, jclass interface_class,
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_skipRefsFromClassesBySubstring(JNIEnv *env, jclass interface_class,
                                                                                   jstring pattern_string)
 {
     const char *pattern = env->GetStringUTFChars(pattern_string, 0);

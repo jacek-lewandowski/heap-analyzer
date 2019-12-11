@@ -1,6 +1,6 @@
 package net.enigma.test.toolkit;
 
-class TestToolkitAgent
+class HeapAnalyzerAgent
 {
     public static native void init();
 

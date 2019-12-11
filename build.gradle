@@ -38,7 +38,7 @@ test {
 }
 
 application {
-    mainClassName = 'net.enigma.test.toolkit.TestToolkitExamples'
+    mainClassName = 'net.enigma.test.toolkit.HeapAnalyzerExamples'
     applicationDefaultJvmArgs = ["-agentpath:${project.buildDir}/${gradle.ext.agentPath}"]
 }
 
