@@ -46,7 +46,7 @@ endif ()
 
 set(SOURCE_FILES
         src/main/cpp/agent.cpp
-        src/main/cpp/debug_references.cpp
+        src/main/cpp/references.cpp
         src/main/cpp/simple_functions.cpp
         src/main/cpp/utils.cpp)
 

@@ -63,6 +63,6 @@ class HeapAnalyzerAgent
      *
      * @param sizeThreshold reference paths to objects with size equal or higher will be considered
      */
-    public static native void debugReferences(long sizeThreshold, int depth);
+    public static native void dumpReferences(long sizeThreshold, int depth);
 
 }

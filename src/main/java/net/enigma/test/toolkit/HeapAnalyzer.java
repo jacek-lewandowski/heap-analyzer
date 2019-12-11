@@ -33,8 +33,8 @@ public abstract class HeapAnalyzer {
         }
 
         @Override
-        public synchronized void debugReferences(long sizeThreshold, int depth) {
-            HeapAnalyzerAgent.debugReferences(sizeThreshold, depth);
+        public synchronized void dumpReferences(long sizeThreshold, int depth) {
+            HeapAnalyzerAgent.dumpReferences(sizeThreshold, depth);
         }
 
         @Override
@@ -88,7 +88,7 @@ public abstract class HeapAnalyzer {
         return new HeapTraversalSummary(0, 0, 0, 0);
     }
 
-    public void debugReferences(long sizeThreshold, int depth) {
+    public void dumpReferences(long sizeThreshold, int depth) {
         // no-op
     }
 
