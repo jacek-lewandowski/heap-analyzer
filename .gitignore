@@ -7,3 +7,15 @@ build
 cmake-build-debug
 /gradle/wrapper/gradle-wrapper.jar
 .idea
+
+CMakeFiles
+bin
+
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+.settings
+.vscode
+.project
+.classpath
+compile_commands.json
