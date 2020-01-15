@@ -161,6 +161,15 @@ void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_markObject(JNIEnv *env, jcla
     throw_exception_if_error(env, jvmti_env->SetTag(obj, tag | MARKER_BIT));
 }
 
+// -------- unmarkObject(Object) --------
+
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_unmarkObject(JNIEnv *env, jclass interface_class, jobject obj)
+{
+    jlong tag = 0;
+    throw_exception_if_error(env, jvmti_env->GetTag(obj, &tag));
+    throw_exception_if_error(env, jvmti_env->SetTag(obj, tag & ~MARKER_BIT));
+}
+
 // -------- skipRefsFromClassesBySubstring(String) --------
 
 void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_skipRefsFromClassesBySubstring(JNIEnv *env, jclass interface_class,

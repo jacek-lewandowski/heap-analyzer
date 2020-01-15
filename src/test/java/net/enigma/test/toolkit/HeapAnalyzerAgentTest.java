@@ -75,6 +75,9 @@ public class HeapAnalyzerAgentTest {
         long tag = instance.getTag(o);
         assertEquals(123L, tag & 0xFFFFFFFFL);
         assertEquals(1L, tag >> 32L);
+
+        instance.unmarkObject(o);
+        assertEquals(123, instance.getTag(o));
     }
 
     @Test

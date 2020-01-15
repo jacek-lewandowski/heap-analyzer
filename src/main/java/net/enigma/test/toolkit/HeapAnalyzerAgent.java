@@ -14,6 +14,15 @@ class HeapAnalyzerAgent
     public static native HeapTraversalSummary traverseHeap();
 
     /**
+     * Traverse heap over reachable objects, count their number and size.
+     * Size and counts are reported for all objects reachable from the given object and separately for those which are marked.
+     *
+     * @return heap traversal summary
+     * @see #markObject(Object)
+     */
+    public static native HeapTraversalSummary traverseHeapFrom(Object object);
+
+    /**
      * Force full garbage collection
      */
     public static native void forceGC();
@@ -46,10 +55,13 @@ class HeapAnalyzerAgent
 
     /**
      * Set a marker flag on the given object's tag.
-     *
-     * @param obj object of interest
      */
     public static native void markObject(Object obj);
+
+    /**
+     * Remove marker flag from the given object's tag.
+     */
+    public static native void unmarkObject(Object obj);
 
     /**
      * Mark classes whose signature matches the given substring so that references from objects of those classes

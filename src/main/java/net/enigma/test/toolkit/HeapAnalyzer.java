@@ -75,6 +75,11 @@ public abstract class HeapAnalyzer {
         }
 
         @Override
+        public void unmarkObject(Object obj) {
+            HeapAnalyzerAgent.unmarkObject(obj);
+        }
+
+        @Override
         public void skipRefsFromClassesBySubstring(String pattern) {
             HeapAnalyzerAgent.skipRefsFromClassesBySubstring(pattern);
         }
@@ -137,6 +142,13 @@ public abstract class HeapAnalyzer {
      * @see HeapAnalyzerAgent#markObject(Object)
      */
     public void markObject(Object obj) {
+        // no-op
+    }
+
+    /**
+     * @see HeapAnalyzerAgent#unmarkObject(Object)
+     */
+    public void unmarkObject(Object obj) {
         // no-op
     }
 
