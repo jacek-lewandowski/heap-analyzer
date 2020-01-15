@@ -59,6 +59,14 @@ class HeapAnalyzerAgent
     public static native void markObject(Object obj);
 
     /**
+     * Set a marker flag on the given object's tag and save its explicit size.
+     * The explicit size will be used for calculating heap memory usage of marked objects
+     * instead of the real object's size. This can be useful if we want to stress that 
+     * only a part of the object data is used (for example, a slice of a shared byte array).
+     */
+    public static native void markObject(Object obj, int explicitSize);
+
+    /**
      * Remove marker flag from the given object's tag.
      */
     public static native void unmarkObject(Object obj);

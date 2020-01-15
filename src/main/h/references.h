@@ -32,4 +32,14 @@ struct DebugRefsData
     std::vector<RefInfo *> **referrerss = NULL;
 };
 
+struct TaggingInfo
+{
+    jlong objects_count;
+    
+    /** since we need to use lower bits of objects' tags for references dump, we want to save there
+     * the explicitly set object sizes which are also stored in lower bits and once dump is done, 
+     * revert those values */
+    std::unordered_map<jlong, jlong> saved_sizes;
+};
+
 #endif //TEST_TOOLKIT_NATIVE_AGENT_REFERENCES_H
