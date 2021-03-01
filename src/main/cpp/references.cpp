@@ -144,13 +144,37 @@ jint _debug_refs_callback(
 
 jint tag_all_objects_callback(jlong class_tag, jlong size, jlong *tag_ptr, jint length, void *user_data)
 {
-    jlong *objects_cnt = (jlong *) user_data;
+    TaggingInfo *tagging_info = (TaggingInfo *) user_data;
 
     if (!(*tag_ptr & CLASS_BIT))
     {
-        *tag_ptr = (*objects_cnt & L_BITS) | (*tag_ptr & MARKER_BIT) | // keep the marker if it is set
-                   OBJECT_BIT; // set object bit
-        *objects_cnt += 1;
+        long new_tag = tagging_info->objects_count & L_BITS;
+        if ((*tag_ptr) & EXPLICIT_SIZE_BIT) {
+            tagging_info->saved_sizes[new_tag] = (*tag_ptr) & L_BITS; // save explicit size
+        }
+        *tag_ptr = new_tag | 
+                    (*tag_ptr & MARKER_BIT) | // keep the marker if it is set
+                    (*tag_ptr & EXPLICIT_SIZE_BIT) | // keep the explicit size bit
+                    OBJECT_BIT; // set object bit
+        tagging_info->objects_count += 1;
+    }
+
+    return JVMTI_VISIT_OBJECTS;
+}
+
+jint untag_all_objects_callback(jlong class_tag, jlong size, jlong *tag_ptr, jint length, void *user_data)
+{
+    TaggingInfo *tagging_info = (TaggingInfo *) user_data;
+
+    if (!(*tag_ptr & CLASS_BIT))
+    {
+        jlong saved_size = 0;
+        if ((*tag_ptr) & EXPLICIT_SIZE_BIT) {
+            saved_size = tagging_info->saved_sizes.at((*tag_ptr) & L_BITS);
+        }
+        *tag_ptr = saved_size |
+                    (*tag_ptr & MARKER_BIT) | // keep the marker if it is set
+                    (*tag_ptr & EXPLICIT_SIZE_BIT); // keep the explicit size bit
     }
 
     return JVMTI_VISIT_OBJECTS;
@@ -414,14 +438,15 @@ void debug_refs(JNIEnv *env, jlong size_threshold, jint depth)
     // before traversing references, we tag all objects (except classes) on heap with consecutive numbers
     // and OBJECT_BIT flag, leaving MARKER_FLAG if it was set; after this operation objects_cnt contains
     // the number of objects
-    jlong objects_cnt = 0;
+    TaggingInfo tagging_info;
+    tagging_info.objects_count = 0;
     clean_callbacks(callbacks)->heap_iteration_callback = &tag_all_objects_callback;
-    jvmti_env->IterateThroughHeap(0, NULL, &callbacks, &objects_cnt);
+    jvmti_env->IterateThroughHeap(0, NULL, &callbacks, &tagging_info);
 
     // here we prepare data for reference traversal; we are going to collect objects which needs to be reported
     // in details, as well as whole map of references
     DebugRefsData debug_refs_data;
-    debug_refs_data.referrerss = (vector<RefInfo *> **) calloc(objects_cnt, sizeof(vector<RefInfo *> **));
+    debug_refs_data.referrerss = (vector<RefInfo *> **) calloc(tagging_info.objects_count, sizeof(vector<RefInfo *> **));
     debug_refs_data.selected_objects.clear();
     debug_refs_data.size_threshold = size_threshold;
 
@@ -441,8 +466,13 @@ void debug_refs(JNIEnv *env, jlong size_threshold, jint depth)
     }
 
     debug_refs_data.selected_objects.clear();
-    _release_refs_vector(debug_refs_data.referrerss, objects_cnt);
+    _release_refs_vector(debug_refs_data.referrerss, tagging_info.objects_count);
     _release_jvmti_objects(1, &classes);
+
+    
+    
+    clean_callbacks(callbacks)->heap_iteration_callback = &untag_all_objects_callback;
+    jvmti_env->IterateThroughHeap(0, NULL, &callbacks, &tagging_info);
 }
 
 void

@@ -75,6 +75,16 @@ public abstract class HeapAnalyzer {
         }
 
         @Override
+        public void markObject(Object obj, int explicitSize) {
+            HeapAnalyzerAgent.markObject(obj, explicitSize);
+        }
+
+        @Override
+        public void unmarkObject(Object obj) {
+            HeapAnalyzerAgent.unmarkObject(obj);
+        }
+
+        @Override
         public void skipRefsFromClassesBySubstring(String pattern) {
             HeapAnalyzerAgent.skipRefsFromClassesBySubstring(pattern);
         }
@@ -85,7 +95,7 @@ public abstract class HeapAnalyzer {
     }
 
     public HeapTraversalSummary traverseHeap() {
-        return new HeapTraversalSummary(0, 0, 0, 0);
+        return new HeapTraversalSummary(0, 0, 0, 0, 0);
     }
 
     public void dumpReferences(long sizeThreshold, int depth) {
@@ -137,6 +147,20 @@ public abstract class HeapAnalyzer {
      * @see HeapAnalyzerAgent#markObject(Object)
      */
     public void markObject(Object obj) {
+        // no-op
+    }
+
+    /**
+     * @see HeapAnalyzerAgent#markObject(Object, long)
+     */
+    public void markObject(Object obj, int explicitSize) {
+        // no-op
+    }
+
+    /**
+     * @see HeapAnalyzerAgent#unmarkObject(Object)
+     */
+    public void unmarkObject(Object obj) {
         // no-op
     }
 

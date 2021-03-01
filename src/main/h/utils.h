@@ -26,6 +26,9 @@ extern jclass heap_traversal_summary_class;
 #define OBJECT_BIT 0x800000000L
 /** Skip references from objects of class tagged with this flag */
 #define SKIP_REFS_FROM_BIT 0x1000000000L
+/** Information that the lower bits of this tag contain the explicit object size 
+ * which should be used for memory usage calculations */
+#define EXPLICIT_SIZE_BIT 0x2000000000L
 
 jint throw_runtime_exception(JNIEnv *env, const char *message);
 

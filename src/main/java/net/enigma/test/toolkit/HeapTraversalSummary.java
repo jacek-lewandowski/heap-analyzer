@@ -7,12 +7,14 @@ public class HeapTraversalSummary {
     public final long totalSize;
     public final long totalCount;
     public final long markedSize;
+    public final long markedExplicitSize;
     public final long markedCount;
 
-    public HeapTraversalSummary(long totalSize, long totalCount, long markedSize, long markedCount) {
+    public HeapTraversalSummary(long totalSize, long totalCount, long markedSize, long markedExplicitSize, long markedCount) {
         this.totalSize = totalSize;
         this.totalCount = totalCount;
         this.markedSize = markedSize;
+        this.markedExplicitSize = markedExplicitSize;
         this.markedCount = markedCount;
     }
 
@@ -24,12 +26,13 @@ public class HeapTraversalSummary {
         return totalSize == that.totalSize &&
                 totalCount == that.totalCount &&
                 markedSize == that.markedSize &&
+                markedExplicitSize == that.markedExplicitSize &&
                 markedCount == that.markedCount;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(totalSize, totalCount, markedSize, markedCount);
+        return Objects.hash(totalSize, totalCount, markedSize, markedExplicitSize, markedCount);
     }
 
     @Override
@@ -38,6 +41,7 @@ public class HeapTraversalSummary {
                 .add("totalSize=" + totalSize)
                 .add("totalCount=" + totalCount)
                 .add("markedSize=" + markedSize)
+                .add("markedExplicitSize=" + markedExplicitSize)
                 .add("markedCount=" + markedCount)
                 .toString();
     }

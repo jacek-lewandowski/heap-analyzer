@@ -18,12 +18,13 @@ typedef struct
     jlong size = 0;
     jlong count = 0;
     jlong marked_size = 0;
+    jlong marked_explicit_size = 0;
     jlong marked_count = 0;
 } FollowRefsData;
 
 jint _reset_tags_callback(jlong class_tag, jlong size, jlong *tag_ptr, jint length, void *user_data)
 {
-    *tag_ptr &= MARKER_BIT | CLASS_BIT | SKIP_REFS_FROM_BIT;
+    *tag_ptr &= ~VISIT_BIT;
     return JVMTI_VISIT_OBJECTS;
 }
 
@@ -73,6 +74,14 @@ jint _follow_refs_callback(
     {
         data->marked_size += size;
         data->marked_count += 1;
+        if ((*tag_ptr) & EXPLICIT_SIZE_BIT) 
+        {
+            data->marked_explicit_size += (*tag_ptr) & L_BITS;
+        } 
+        else
+        {
+            data->marked_explicit_size += size;
+        }
     }
 
     *tag_ptr |= VISIT_BIT;
@@ -96,14 +105,17 @@ jobject Java_net_enigma_test_toolkit_HeapAnalyzerAgent_traverseHeap(JNIEnv *env,
         throw_runtime_exception(env, "Failed to get HeapTraversalSummary class");
         return NULL;
     }
-    jmethodID heap_traversal_summary_ctor = env->GetMethodID(heap_traversal_summary_class, "<init>", "(JJJJ)V");
+    jmethodID heap_traversal_summary_ctor = env->GetMethodID(heap_traversal_summary_class, "<init>", "(JJJJJ)V");
     if (heap_traversal_summary_ctor == NULL)
     {
         throw_runtime_exception(env, "Failed to get HeapTraversalSummary constructor");
         return NULL;
     }
-    jobject summary = env->NewObject(heap_traversal_summary_class, heap_traversal_summary_ctor, data.size, data.count,
+    jobject summary = env->NewObject(heap_traversal_summary_class, heap_traversal_summary_ctor, 
+                                     data.size, 
+                                     data.count,
                                      data.marked_size,
+                                     data.marked_explicit_size,
                                      data.marked_count);
     return summary;
 }
@@ -154,11 +166,30 @@ void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_setTag__JJ(
 
 // -------- markObject(Object) --------
 
-void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_markObject(JNIEnv *env, jclass interface_class, jobject obj)
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_markObject__Ljava_lang_Object_2(JNIEnv *env, jclass interface_class, jobject obj)
 {
     jlong tag = 0;
     throw_exception_if_error(env, jvmti_env->GetTag(obj, &tag));
     throw_exception_if_error(env, jvmti_env->SetTag(obj, tag | MARKER_BIT));
+}
+
+// -------- markObject(Object, int) --------
+
+void JNICALL Java_net_enigma_test_toolkit_HeapAnalyzerAgent_markObject__Ljava_lang_Object_2I(JNIEnv *env, jclass interface_class, jobject obj, jint explicit_size)
+{
+    jlong tag = 0;
+    throw_exception_if_error(env, jvmti_env->GetTag(obj, &tag));
+    throw_exception_if_error(env, jvmti_env->SetTag(obj, (jlong) explicit_size + (((tag & H_BITS) | MARKER_BIT | EXPLICIT_SIZE_BIT))));
+    throw_exception_if_error(env, jvmti_env->GetTag(obj, &tag));
+}
+
+// -------- unmarkObject(Object) --------
+
+void Java_net_enigma_test_toolkit_HeapAnalyzerAgent_unmarkObject(JNIEnv *env, jclass interface_class, jobject obj)
+{
+    jlong tag = 0;
+    throw_exception_if_error(env, jvmti_env->GetTag(obj, &tag));
+    throw_exception_if_error(env, jvmti_env->SetTag(obj, tag & ~(MARKER_BIT | EXPLICIT_SIZE_BIT)));
 }
 
 // -------- skipRefsFromClassesBySubstring(String) --------

@@ -75,6 +75,9 @@ public class HeapAnalyzerAgentTest {
         long tag = instance.getTag(o);
         assertEquals(123L, tag & 0xFFFFFFFFL);
         assertEquals(1L, tag >> 32L);
+
+        instance.unmarkObject(o);
+        assertEquals(123, instance.getTag(o));
     }
 
     @Test
@@ -103,7 +106,7 @@ public class HeapAnalyzerAgentTest {
 
         byte[][] extraRef = array;
         HeapTraversalSummary hs3 = HeapAnalyzer.instance.traverseHeap();
-        assertEquals(100, hs3.totalCount - hs1.totalCount, 30);
+        assertEquals(hs2.totalCount, hs3.totalCount, 30);
         assertEquals(20000, hs3.totalSize - hs1.totalSize, 6000);
 
         for (int i = 0; i < array.length / 2; i++) array[i] = null;
@@ -116,29 +119,39 @@ public class HeapAnalyzerAgentTest {
     public void testTraverseHeapWithMarkedObjects() {
         byte[][] array = new byte[100][];
         HeapTraversalSummary hs1 = HeapAnalyzer.instance.traverseHeap();
-        assertEquals(hs1.markedCount, 0);
-        assertEquals(hs1.markedSize, 0);
+        assertEquals(0, hs1.markedCount);
+        assertEquals(0, hs1.markedSize);
+        assertEquals(0, hs1.markedExplicitSize);
 
         for (int i = 0; i < array.length; i++) array[i] = new byte[200];
         HeapTraversalSummary hs2 = HeapAnalyzer.instance.traverseHeap();
-        assertEquals(hs2.markedCount, 0);
-        assertEquals(hs2.markedSize, 0);
-
+        assertEquals(0, hs2.markedCount);
+        assertEquals(0, hs2.markedSize);
+        assertEquals(0, hs2.markedExplicitSize);
 
         Arrays.stream(array).forEach(instance::markObject);
         HeapTraversalSummary hs3 = HeapAnalyzer.instance.traverseHeap();
-        assertEquals(hs3.markedCount, 100);
-        assertEquals(hs3.markedSize, 21600);
+        assertEquals(100, hs3.markedCount);
+        assertEquals(21600, hs3.markedSize);
+        assertEquals(21600, hs3.markedExplicitSize);
+
+        for (int i = 0; i < array.length / 4; i++) HeapAnalyzer.instance.markObject(array[i], 15);
+        HeapTraversalSummary hs4 = HeapAnalyzer.instance.traverseHeap();
+        assertEquals(100, hs4.markedCount);
+        assertEquals(21600, hs4.markedSize);
+        assertEquals(16575, hs4.markedExplicitSize);
 
         for (int i = 0; i < array.length / 2; i++) array[i] = null;
-        HeapTraversalSummary hs4 = HeapAnalyzer.instance.traverseHeap();
-        assertEquals(hs4.markedCount, 50);
-        assertEquals(hs4.markedSize, 10800);
+        HeapTraversalSummary hs5 = HeapAnalyzer.instance.traverseHeap();
+        assertEquals(50, hs5.markedCount);
+        assertEquals(10800, hs5.markedSize);
+        assertEquals(10800, hs5.markedExplicitSize);
 
         byte[][] extraRef = array;
-        HeapTraversalSummary hs5 = HeapAnalyzer.instance.traverseHeap();
-        assertEquals(hs5.markedCount, 50);
-        assertEquals(hs5.markedSize, 10800);
+        HeapTraversalSummary hs6 = HeapAnalyzer.instance.traverseHeap();
+        assertEquals(50, hs6.markedCount);
+        assertEquals(10800, hs6.markedSize);
+        assertEquals(10800, hs6.markedExplicitSize);
     }
 
     @Test
@@ -148,26 +161,31 @@ public class HeapAnalyzerAgentTest {
         HeapTraversalSummary hs1 = HeapAnalyzer.instance.traverseHeap();
         assertEquals(1, hs1.markedCount);
         assertEquals(1016, hs1.markedSize);
+        assertEquals(1016, hs1.markedExplicitSize);
 
         AtomicReference<byte[]> ref = new AtomicReference<>(o);
         HeapTraversalSummary hs2 = HeapAnalyzer.instance.traverseHeap();
         assertEquals(1, hs2.markedCount);
         assertEquals(1016, hs2.markedSize);
+        assertEquals(1016, hs2.markedExplicitSize);
 
         o = null;
         HeapTraversalSummary hs3 = HeapAnalyzer.instance.traverseHeap();
         assertEquals(1, hs3.markedCount);
         assertEquals(1016, hs3.markedSize);
+        assertEquals(1016, hs3.markedExplicitSize);
 
         instance.skipRefsFromClassesBySubstring("/AtomicReference");
         HeapTraversalSummary hs4 = HeapAnalyzer.instance.traverseHeap();
         assertEquals(0, hs4.markedCount);
         assertEquals(0, hs4.markedSize);
+        assertEquals(0, hs4.markedExplicitSize);
 
         o = ref.get();
         HeapTraversalSummary hs5 = HeapAnalyzer.instance.traverseHeap();
         assertEquals(1, hs5.markedCount);
         assertEquals(1016, hs5.markedSize);
+        assertEquals(1016, hs5.markedExplicitSize);
     }
 
     private void assertTags(Object[] array, long... tags) {
